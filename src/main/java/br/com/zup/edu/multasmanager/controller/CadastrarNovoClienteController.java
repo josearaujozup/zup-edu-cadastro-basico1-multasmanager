@@ -29,7 +29,7 @@ public class CadastrarNovoClienteController {
 		
 		repository.save(novoCliente);
 		
-		URI location = uriComponentsBuilder.path("/clientes/id").buildAndExpand(novoCliente.getId()).toUri();
+		URI location = uriComponentsBuilder.path("/clientes/{id}").buildAndExpand(novoCliente.getId()).toUri();
 		
 		return ResponseEntity.created(location).build();
 	}
