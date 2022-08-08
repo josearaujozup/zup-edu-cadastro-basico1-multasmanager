@@ -1,16 +1,15 @@
 package br.com.zup.edu.multasmanager.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,7 +31,11 @@ public class CadastrarNovoCarroController {
 	
 	@PostMapping
 	public ResponseEntity<Void> cadastrar(@PathVariable Long idCliente, @RequestBody @Valid CarroDTO request, UriComponentsBuilder uriComponentsBuilder){
-		
+
+		if(repository.existsByPlaca(request.getPlaca()) || repository.existsByChassi(request.getChassi())) {
+			throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,"Carro já existe no sistema");
+		}
+
 		Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Não existe cadastro de cliente para o id informado"));
 		
 		Carro novoCarro = request.paraCarro(cliente);
@@ -42,5 +45,16 @@ public class CadastrarNovoCarroController {
 		
 		return ResponseEntity.created(location).build();
 	}
-	
+
+	@ExceptionHandler
+	public ResponseEntity<?> handleUniqueConstraintErrors(ConstraintViolationException e){
+
+		Map<String, Object> body = Map.of(
+				"message", "carro já existente no sistema",
+				"timestamp", LocalDateTime.now()
+		);
+
+		return ResponseEntity.unprocessableEntity().body(body);
+	}
+
 }

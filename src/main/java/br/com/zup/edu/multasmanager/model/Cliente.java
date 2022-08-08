@@ -1,5 +1,7 @@
 package br.com.zup.edu.multasmanager.model;
 
+import br.com.zup.edu.multasmanager.utils.CpfUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,9 +21,12 @@ public class Cliente {
 	@Column(nullable = false, length=25)
 	private String sobrenome;
 	
-	@Column(nullable = false, length=11)
+	@Column(nullable = false, length=14)
 	private String cpf;
-	
+
+	@Column(nullable = false, unique = true, length = 64) // unico
+	private String hashDoCpf;
+
 	@Column(nullable = false)
 	private Integer rg;
 	
@@ -38,7 +43,8 @@ public class Cliente {
 			String telefone) {
 		this.nome = nome;
 		this.sobrenome = sobrenome;
-		this.cpf = cpf;
+		this.cpf = CpfUtils.anonymize(cpf);
+		this.hashDoCpf = CpfUtils.hash(cpf);
 		this.rg = rg;
 		this.endereco = endereco;
 		this.email = email;

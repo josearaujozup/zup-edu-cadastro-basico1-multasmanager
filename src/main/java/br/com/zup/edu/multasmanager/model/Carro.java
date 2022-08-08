@@ -16,7 +16,7 @@ public class Carro {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String placa;
 	
 	@Column(nullable = false, length = 11)
@@ -28,7 +28,7 @@ public class Carro {
 	@Column(nullable = false)
 	private String modelo;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String chassi;
 	
 	@Column(nullable = false)
